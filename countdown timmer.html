@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #73a5ff, #5474d5);
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer {
+            font-size: 48px;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            width: 60px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #21a1f1;
+        }
+
+        button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Countdown Timer</h1>
+        <input type="number" id="durationInput" placeholder="Seconds" min="1">
+        <button id="startButton">Start</button>
+        <button id="pauseButton" disabled>Pause</button>
+        <button id="resetButton" disabled>Reset</button>
+        <div id="timer" class="timer">00:00</div>
+    </div>
+    <script>
+        let countdown;
+        let timerInterval = null;
+
+        const timerDisplay = document.getElementById("timer");
+        const startButton = document.getElementById("startButton");
+        const pauseButton = document.getElementById("pauseButton");
+        const resetButton = document.getElementById("resetButton");
+        const durationInput = document.getElementById("durationInput");
+
+        const startCountdown = (seconds) => {
+            countdown = seconds;
+            updateDisplay();
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Time's Up!";
+                    disableButtons(true);
+                } else {
+                    countdown--;
+                    updateDisplay();
+                }
+            }, 1000);
+            disableButtons(true);
+        };
+
+        const updateDisplay = () => {
+            const minutes = Math.floor(countdown / 60);
+            const remainingSeconds = countdown % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        };
+
+        const pauseCountdown = () => {
+            clearInterval(timerInterval);
+            disableButtons(false);
+        };
+
+        const resetCountdown = () => {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "00:00";
+            durationInput.value = '';
+            disableButtons(false);
+        };
+
+        const disableButtons = (isCounting) => {
+            startButton.disabled = isCounting;
+            pauseButton.disabled = !isCounting;
+            resetButton.disabled = !isCounting;
+        };
+
+        startButton.addEventListener("click", () => {
+            const duration = parseInt(durationInput.value);
+            if (duration > 0) {
+                startCountdown(duration);
+            } else {
+                alert("Please enter a valid number of seconds.");
+            }
+        });
+
+        pauseButton.addEventListener("click", pauseCountdown);
+        resetButton.addEventListener("click", resetCountdown);
+    </script>
+</body>
+</html>
